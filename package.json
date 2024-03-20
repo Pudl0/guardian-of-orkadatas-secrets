@@ -1,0 +1,32 @@
+{
+  "name": "guardian-of-orkadatas-secrets",
+  "version": "1.0.0",
+  "description": "Discord Bot that operates on the trainee center dnd and gaming discord server.",
+  "main": "index.js",
+  "scripts": {
+    "dev": "tsup src --minify --watch --onSuccess \"node dist/index.js\"",
+    "start": "node dist/index.js",
+    "build": "tsup src --minify",
+    "deploy-commands": "tsup src --minify && node dist/deploy-commands.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Pudl0/guardian-of-orkadatas-secrets.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Pudl0/guardian-of-orkadatas-secrets/issues"
+  },
+  "homepage": "https://github.com/Pudl0/guardian-of-orkadatas-secrets#readme",
+  "dependencies": {
+    "discord.js": "^14.14.1",
+    "dotenv": "^16.4.5",
+    "remove": "^0.1.5"
+  },
+  "devDependencies": {
+    "eslint": "^8.57.0",
+    "tsup": "^8.0.2",
+    "typescript": "^5.4.2"
+  }
+}
