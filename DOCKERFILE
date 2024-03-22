@@ -14,4 +14,5 @@ COPY . /guardian/
 
 # Run build and start the bot
 RUN npm run build
+RUN npm run deploy-commands
 CMD ["npm", "run", "start"]
