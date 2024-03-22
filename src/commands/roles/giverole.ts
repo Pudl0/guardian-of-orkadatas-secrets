@@ -21,15 +21,14 @@ module.exports = {
         let sucessfull = await (interaction.member?.roles as GuildMemberRoleManager).add(role as RoleResolvable).catch(async error => {
             if ((error as DiscordAPIError).code == 50013) {
                 await interaction.reply(`Role "${role?.name}" could not be added, because of missing permission :(`);
+            } else {
+                await interaction.reply(`An error has occurred while trying to add "${role?.name}"`);
             }
         });
 
-        if (sucessfull == undefined) {
-            await interaction.reply(`An error has occurred while trying to add "${role?.name}"`);
-            return;
-        }
-
-        await interaction.reply(`Role "${role?.name}" has been added`);
+        if (sucessfull != undefined) {
+            await interaction.reply(`Role "${role?.name}" has been added`);
+        }        
     },
 };
 
