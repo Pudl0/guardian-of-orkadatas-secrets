@@ -1,0 +1,15 @@
+## this is just a sample compose
+
+services:
+  discord-bot:
+    container_name: discord-bot
+    build: .
+    environment:
+      - DISCORD_TOKEN=<token>
+      - DISCORD_CLIENT_ID=<clientId>
+      - DISCORD_GUILD_ID=<guildId>
+    networks:
+      - app-network
+      
+networks:
+  app-network:
