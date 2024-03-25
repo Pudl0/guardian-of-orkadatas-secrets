@@ -30,13 +30,13 @@ Just use [Docker](#running-with-docker)
 [Example Compose](/docker-compose.yml)
 
 There is a default compose provided.
-The enviroment variables need to be changed to make the bot work.
+The enviroment variables need to be set to make the bot work.
 See [Environment Variables](#environment-variables)
 
 ## Environment Variables
 
-You need to change these Enviroment Variables to make the bot work.
-Create a `.env` in the root folder for development or pass them through the compose file.
+You need to set these Enviroment Variables to make the bot work.
+Create a `.env` in the root folder with following variables:
 
 - `DISCORD_TOKEN`: the token of your discord bot.
 - `DISCORD_CLIENT_ID`: the client id of your discord bot.
