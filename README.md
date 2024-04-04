@@ -42,6 +42,8 @@ Create a `.env` in the root folder with following variables:
 - `DISCORD_CLIENT_ID`: the client id of your discord bot.
 - `DISCORD_GUILD_ID`: the guild id of the guild that your bot should run in.
 
+For Production fill out the enviroment variables in the docker compose file.
+
 
 ## Character Description:
 The Guardian of Orkadata's Secrets stands tall, a figure shrouded in an aura of ancient knowledge and mystical power. At first glance, one might mistake it for a towering statue carved from the very stone of the realm itself, but upon closer inspection, the truth becomes clear: this is a being of immense wisdom and power.

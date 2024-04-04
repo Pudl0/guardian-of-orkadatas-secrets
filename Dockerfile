@@ -12,7 +12,5 @@ RUN npm install
 # Copy root dir from project
 COPY . /guardian/
 
-# Run build and start the bot
-RUN npm run build
-RUN npm run deploy-commands
-CMD ["npm", "run", "start"]
+# Run docker script
+CMD ["npm", "run", "docker"]
