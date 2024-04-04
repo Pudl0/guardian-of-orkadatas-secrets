@@ -7,8 +7,8 @@
     "dev": "tsup src --minify --watch --onSuccess \"node dist/index.js\"",
     "start": "node dist/index.js",
     "build": "tsup src --minify",
-    "deploy-commands": "npm run build && node dist/deploy-commands.js",
-    "docker": "npm run build && npm run deploy-commands && npm run start"
+    "deploy-commands": "node dist/deploy-commands.js",
+    "docker-start": "npm run deploy-commands && npm run start"
   },
   "repository": {
     "type": "git",

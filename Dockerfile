@@ -12,5 +12,8 @@ RUN npm install
 # Copy root dir from project
 COPY . /guardian/
 
+# Run build
+RUN npm run build
+
 # Run docker script
-CMD ["npm", "run", "docker"]
+CMD ["npm", "run", "docker-start"]

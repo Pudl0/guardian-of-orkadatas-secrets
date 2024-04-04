@@ -4,10 +4,6 @@ services:
   discord-bot:
     container_name: discord-bot
     build: .
-    environment:
-      - DISCORD_TOKEN=<Token>
-      - DISCORD_CLIENT_ID=<ClientId>
-      - DISCORD_GUILD_ID=<GuildId>
     networks:
       - app-network
       
