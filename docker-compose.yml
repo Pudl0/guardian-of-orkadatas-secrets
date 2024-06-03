@@ -6,6 +6,9 @@ services:
     build: .
     networks:
       - app-network
+    depends_on:
+      db:
+        condition: service_healthy
   db:
     image: lscr.io/linuxserver/mariadb:latest
     container_name: mariadb
@@ -21,7 +24,13 @@ services:
       - ./config:/config
     ports:
       - 3306:3306
+    networks:
+      - app-network
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+      timeout: 20s
+      retries: 10
     restart: unless-stopped
-      
+
 networks:
   app-network:

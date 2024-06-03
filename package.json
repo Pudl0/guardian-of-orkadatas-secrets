@@ -8,7 +8,7 @@
     "start": "node dist/index.js",
     "build": "tsup src --minify",
     "deploy-commands": "node dist/deploy-commands.js",
-    "docker-start": "npm run deploy-commands && npm run start"
+    "docker-start": "npx prisma migrate deploy && npm run deploy-commands && npm run start"
   },
   "repository": {
     "type": "git",
@@ -21,6 +21,7 @@
   },
   "homepage": "https://github.com/Pudl0/guardian-of-orkadatas-secrets#readme",
   "dependencies": {
+    "@prisma/client": "^5.14.0",
     "discord.js": "^14.14.1",
     "dotenv": "^16.4.5",
     "remove": "^0.1.5"

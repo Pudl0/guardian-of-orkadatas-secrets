@@ -18,7 +18,6 @@ model DndSession {
   id            String           @id @default(uuid())
   name          String           @db.VarChar(255)
   dmId          String
-  DungeonMaster DndDungeonMaster @relation(fields: [dmId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "DndSession_ibfk_1")
   DndCharacter  DndCharacter[]
 
   @@index([dmId], map: "dmId")
@@ -33,11 +32,4 @@ model DndCharacter {
   Session   DndSession @relation(fields: [sessionId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "DndCharacter_ibfk_1")
 
   @@index([sessionId], map: "sessionId")
-}
-
-// generate model for a dnd dungeon master
-model DndDungeonMaster {
-  id         String       @id @default(uuid())
-  userId     String       @db.VarChar(255)
-  DndSession DndSession[]
 }
