@@ -12,7 +12,11 @@ export const sessionService = {
         return sessions;
     },
     async getSessionsAsync() {
-        return await client.dndSession.findMany();
+        return await client.dndSession.findMany({
+            include: {
+                DndCharacter: true
+            }
+        });
     },
     async getSessionByIdAsync(id: string) {
         return await client.dndSession.findUnique({

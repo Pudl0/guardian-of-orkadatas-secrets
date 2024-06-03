@@ -9,15 +9,18 @@ module.exports = {
 		.addStringOption(option =>
 			option.setName('name')
 				.setDescription('The name of the session.')
-				.setRequired(true))
+				.setRequired(true)
+			)
 		.addUserOption(option =>
 			option.setName('dm')
 				.setDescription('The Dungeon Master of the session.')
-				.setRequired(true))
+				.setRequired(true)
+			)
 		.setDefaultMemberPermissions(PermissionFlagsBits.ManageChannels),
 	async execute(interaction: ChatInputCommandInteraction) {
 		const dm = interaction.options.getUser('dm')!;
 		const name = interaction.options.getString('name')!;
+		
 		let success = await sessionService.createSessionAsync(name, dm.id);
 
 		if (success == null) {

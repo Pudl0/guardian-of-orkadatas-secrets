@@ -8,7 +8,8 @@ module.exports = {
         .addStringOption(option =>
             option.setName('name')
                 .setDescription('The name of the session.')
-                .setRequired(true))
+                .setRequired(true)
+            )
         .setDefaultMemberPermissions(PermissionFlagsBits.ManageChannels),
     async execute(interaction: ChatInputCommandInteraction) {
         const name = interaction.options.getString('name')!;

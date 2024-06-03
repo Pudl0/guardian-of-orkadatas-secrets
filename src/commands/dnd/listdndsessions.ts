@@ -22,7 +22,7 @@ module.exports = {
         }
 
         sessions.forEach(session => {
-            embed.addFields({ name: session.name, value: `Session ID: ${session.id}\nDM: <@${session.dmId}>` });
+            embed.addFields({ name: session.name, value: `Session ID: ${session.id}\nDM: <@${session.dmId}>\n${session.DndCharacter.length} ${session.DndCharacter.length == 1 ? "Player" : "Players"}` });
         });
 
         await interaction.reply({ embeds: [embed] });
