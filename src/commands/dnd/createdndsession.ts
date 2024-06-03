@@ -20,7 +20,7 @@ module.exports = {
 	async execute(interaction: ChatInputCommandInteraction) {
 		const dm = interaction.options.getUser('dm')!;
 		const name = interaction.options.getString('name')!;
-		
+
 		let success = await sessionService.createSessionAsync(name, dm.id);
 
 		if (success == null) {
@@ -35,7 +35,7 @@ module.exports = {
 
 		const successEmbed = new EmbedBuilder()
 			.setTitle('Success')
-			.setDescription(`Created Session ${name}!`)
+			.setDescription(`Created session ${name}!`)
 			.setColor('#00ff00');
 
 		await interaction.reply({ embeds: [successEmbed] });
