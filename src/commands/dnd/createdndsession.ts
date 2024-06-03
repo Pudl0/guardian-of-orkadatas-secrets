@@ -1,4 +1,4 @@
-import { ChatInputCommandInteraction, SlashCommandBuilder } from "discord.js";
+import { ChatInputCommandInteraction, EmbedBuilder, PermissionFlagsBits, SlashCommandBuilder } from "discord.js";
 import { sessionService } from "../../services/sessionService";
 
 
@@ -13,12 +13,28 @@ module.exports = {
 		.addUserOption(option =>
 			option.setName('dm')
 				.setDescription('The Dungeon Master of the session.')
-				.setRequired(true)),
+				.setRequired(true))
+		.setDefaultMemberPermissions(PermissionFlagsBits.ManageChannels),
 	async execute(interaction: ChatInputCommandInteraction) {
 		const dm = interaction.options.getUser('dm')!;
 		const name = interaction.options.getString('name')!;
-		await sessionService.createSessionAsync(name, dm.id);
-		
-		await interaction.reply('Created Session!');
+		let success = await sessionService.createSessionAsync(name, dm.id);
+
+		if (success == null) {
+			const errorEmbed = new EmbedBuilder()
+				.setTitle('Error')
+				.setDescription(`Session with name: "${name}" already exists!`)
+				.setColor('#ff0000');
+
+			await interaction.reply({ embeds: [errorEmbed] });
+			return;
+		}
+
+		const successEmbed = new EmbedBuilder()
+			.setTitle('Success')
+			.setDescription(`Created Session ${name}!`)
+			.setColor('#00ff00');
+
+		await interaction.reply({ embeds: [successEmbed] });
 	},
 };
