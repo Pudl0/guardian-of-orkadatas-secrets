@@ -6,6 +6,22 @@ services:
     build: .
     networks:
       - app-network
+  db:
+    image: lscr.io/linuxserver/mariadb:latest
+    container_name: mariadb
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Berlin
+      - MYSQL_ROOT_PASSWORD=<DATABASE_ROOT_PASSWORD>
+      - MYSQL_DATABASE=guardian
+      - MYSQL_USER=<username>
+      - MYSQL_PASSWORD=<password>
+    volumes:
+      - ./config:/config
+    ports:
+      - 3306:3306
+    restart: unless-stopped
       
 networks:
   app-network:
