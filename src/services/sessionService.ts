@@ -33,7 +33,7 @@ export const sessionService = {
 
         return sessions[0];
     },
-    async createSessionAsync(name: string, dmId: string) {
+    async createSessionAsync(name: string, dmId: string, dayOfWeek: number, time: number) {
         let sessionsDuplicates = await this.getAllSessionsByNameAsync(name);
 
         if (sessionsDuplicates.length > 0)
@@ -42,7 +42,9 @@ export const sessionService = {
         return await client.dndSession.create({
             data: {
                 name: name,
-                dmId: dmId
+                dmId: dmId,
+                dayOfWeek: dayOfWeek,
+                time: time 
             }
         });
     },
@@ -50,6 +52,16 @@ export const sessionService = {
         return await client.dndSession.delete({
             where: {
                 id: id
+            }
+        });
+    },
+    async setSessionActiveAsync(id: string, active: boolean) {
+        return await client.dndSession.update({
+            where: {
+                id: id
+            },
+            data: {
+                active: active
             }
         });
     }

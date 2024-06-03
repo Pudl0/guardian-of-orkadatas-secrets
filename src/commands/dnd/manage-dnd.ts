@@ -25,6 +25,16 @@ module.exports = {
                                 .setDescription('The Dungeon Master of the session.')
                                 .setRequired(true)
                         )
+                        .addIntegerOption(option =>
+                            option.setName('dayoftheweek')
+                                .setDescription('The day of the week the session is on. (0-6) 0 = Sunday, 6 = Saturday.')
+                                .setRequired(true)
+                        )
+                        .addIntegerOption(option =>
+                            option.setName('time')
+                                .setDescription('The time the session is on. (0-23) 0 = 12:00 AM, 23 = 11:00 PM.')
+                                .setRequired(true)
+                        )
                 )
                 .addSubcommand(command =>
                     command.setName('character')
@@ -67,6 +77,25 @@ module.exports = {
                                 .setRequired(true)
                         )
                 )
+        )
+        .addSubcommandGroup(group =>
+            group
+                .setName('set')
+                .setDescription('Set state of DnD Objects.')
+                .addSubcommand(command =>
+                    command.setName('session')
+                        .setDescription('Set state of session')
+                        .addStringOption(option =>
+                            option.setName('name')
+                                .setDescription('The name of the session.')
+                                .setRequired(true)
+                        )
+                        .addBooleanOption(option =>
+                            option.setName("active")
+                                .setDescription("Change active state of session")
+                                .setRequired(true)
+                        )
+                )
         ),
     async execute(interaction: ChatInputCommandInteraction) {
         const subcommandGroup = interaction.options.getSubcommandGroup()!;
@@ -79,9 +108,10 @@ module.exports = {
                 embed = await createAsync(subcommand, interaction);
                 break;
             case 'delete':
-
                 embed = await deleteAsync(subcommand, interaction);
                 break;
+            case 'set':
+                embed = await setAsync(subcommand, interaction);
         }
 
         await interaction.reply({ embeds: [embed] });
@@ -129,8 +159,10 @@ async function createCharacterAsync(interaction: ChatInputCommandInteraction) {
 async function createSessionAsync(interaction: ChatInputCommandInteraction) {
     const dm = interaction.options.getUser('dm')!;
     const name = interaction.options.getString('name')!;
+    const dayOfTheWeek = interaction.options.getInteger('dayoftheweek')!;
+    const time = interaction.options.getInteger('time')!;
 
-    let success = await sessionService.createSessionAsync(name, dm.id);
+    let success = await sessionService.createSessionAsync(name, dm.id, dayOfTheWeek, time);
 
     if (success == null) {
         const errorEmbed = new EmbedBuilder()
@@ -202,6 +234,37 @@ async function deleteSessionAsync(interaction: ChatInputCommandInteraction) {
     const successEmbed = new EmbedBuilder()
         .setTitle('Success')
         .setDescription(`Deleted Session ${deletedSession.name}!`)
+        .setColor('#00ff00');
+
+    return successEmbed;
+}
+
+async function setAsync(type: String, interaction: ChatInputCommandInteraction) {
+    switch (type) {
+        case 'session':
+            return await setSessionStateAsync(interaction);
+    }
+    return new EmbedBuilder().setTitle('Error').setDescription('Invalid type').setColor('#ff0000');    
+}
+
+async function setSessionStateAsync(interaction: ChatInputCommandInteraction) {
+    const active = interaction.options.getBoolean('active')!;
+    const session = await sessionService.getSessionByNameAsync(interaction.options.getString('name')!);
+
+    if (session == null) {
+        const errorEmbed = new EmbedBuilder()
+            .setTitle('Error')
+            .setDescription(`Session with name: "${interaction.options.getString('name')}" does not exist!`)
+            .setColor('#ff0000');
+
+        return errorEmbed;
+    }
+
+    await sessionService.setSessionActiveAsync(session.id, active);
+
+    const successEmbed = new EmbedBuilder()
+        .setTitle('Success')
+        .setDescription(`Set active state of session ${session.name} to ${active}!`)
         .setColor('#00ff00');
 
     return successEmbed;

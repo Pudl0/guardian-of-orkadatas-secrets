@@ -15,10 +15,13 @@ datasource db {
 
 // generate model for a dnd session
 model DndSession {
-  id            String           @id @default(uuid())
-  name          String           @db.VarChar(255)
-  dmId          String
-  DndCharacter  DndCharacter[]
+  id           String         @id @default(uuid())
+  name         String         @db.VarChar(255)
+  active       Boolean        @default(true)
+  dayOfWeek    Int
+  time         Int
+  dmId         String
+  DndCharacter DndCharacter[]
 
   @@index([dmId], map: "dmId")
 }
