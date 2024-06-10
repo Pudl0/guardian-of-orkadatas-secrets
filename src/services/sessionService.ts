@@ -39,6 +39,12 @@ export const sessionService = {
         if (sessionsDuplicates.length > 0)
             return null;
 
+        if (dayOfWeek < 0 || dayOfWeek > 6)
+            return null;
+
+        if (time < 0 || time > 23)
+            return null;
+
         return await client.dndSession.create({
             data: {
                 name: name,
@@ -55,13 +61,67 @@ export const sessionService = {
             }
         });
     },
-    async setSessionActiveAsync(id: string, active: boolean) {
+    async updateSessionActiveAsync(id: string, active: boolean) {
         return await client.dndSession.update({
             where: {
                 id: id
             },
             data: {
                 active: active
+            }
+        });
+    },
+    async updateSessionTimeAsync(id: string, time: number){
+
+        if (time < 0 || time > 23)
+            return null;
+
+        return await client.dndSession.update({
+            where: {
+                id: id
+            },
+            data: {
+                time: time
+            }
+        });
+    },
+    async updateSessionDayOfWeekAsync(id: string, dayOfWeek: number) {
+
+        if (dayOfWeek < 0 || dayOfWeek > 6)
+            return null;
+
+        return await client.dndSession.update({
+            where: {
+                id: id
+            },
+            data: {
+                dayOfWeek: dayOfWeek
+            }
+        });
+    },
+    async updateSessionNameAsync(id: string, name: string) {
+
+        let sessionsDuplicates = await this.getAllSessionsByNameAsync(name);
+        
+        if (sessionsDuplicates.length > 0)
+            return null;
+
+        return await client.dndSession.update({
+            where: {
+                id: id
+            },
+            data: {
+                name: name
+            }
+        });
+    },
+    async updateSessionDmIdAsync(id: string, dmId: string) {
+        return await client.dndSession.update({
+            where: {
+                id: id
+            },
+            data: {
+                dmId: dmId
             }
         });
     }

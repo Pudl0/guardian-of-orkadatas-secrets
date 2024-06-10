@@ -28,6 +28,24 @@ module.exports = {
                     command.setName('schedule')
                         .setDescription('Shows the DnD Session Schedule.')
                 )
+                .addSubcommand(command =>
+                    command.setName('session')
+                        .setDescription('Shows a specific DnD Session.')
+                        .addIntegerOption(option =>
+                            option.setName('id')
+                                .setDescription('The ID of the session.')
+                                .setRequired(true)
+                        )
+                )
+                .addSubcommand(command =>
+                    command.setName('character')
+                        .setDescription('Shows a specific DnD Character.')
+                        .addIntegerOption(option =>
+                            option.setName('id')
+                                .setDescription('The ID of the character.')
+                                .setRequired(true)
+                        )
+                )
         ),
     async execute(interaction: ChatInputCommandInteraction) {
         const subcommandGroup = interaction.options.getSubcommandGroup()!;
@@ -40,7 +58,7 @@ module.exports = {
                 embed = await listAsync(subcommand);
                 break;
             case 'show':
-                embed = await scheduleAsync(subcommand);
+                embed = await showAsync(subcommand, interaction);
                 break;
         }
 
@@ -54,6 +72,18 @@ async function listAsync(type: String) {
             return await listCharactersAsync();
         case 'session':
             return await listSessionsAsync();
+    }
+    return new EmbedBuilder().setTitle('Error').setDescription('Invalid type').setColor('#ff0000');
+}
+
+async function showAsync(type: String, interaction: ChatInputCommandInteraction) {
+    switch (type) {
+        case 'schedule':
+            return await showScheduleAsync();
+        case 'session':
+            return await showSessionAsync(interaction);
+        case 'character':
+            return await showCharacterAsync(interaction);
     }
     return new EmbedBuilder().setTitle('Error').setDescription('Invalid type').setColor('#ff0000');
 }
@@ -107,15 +137,7 @@ async function listCharactersAsync() {
     return embed;
 }
 
-async function scheduleAsync(type: String) {
-    switch (type) {
-        case 'schedule':
-            return await scheduleSessionAsync();
-    }
-    return new EmbedBuilder().setTitle('Error').setDescription('Invalid type').setColor('#ff0000');
-}
-
-async function scheduleSessionAsync() {
+async function showScheduleAsync() {
     let sessions = await sessionService.getSessionsAsync();
 
     // create embed with all sessions and their information
@@ -142,6 +164,7 @@ async function scheduleSessionAsync() {
         } else {
             embed.addFields({
                 name: day,
+                inline: true,
                 value: sessionsForDay
                     .sort((a, b) => {
                         if (a.time < b.time) {
@@ -159,4 +182,49 @@ async function scheduleSessionAsync() {
     });
 
     return embed;
+}
+
+async function showSessionAsync(interaction: ChatInputCommandInteraction) {
+    const id = interaction.options.getString('id')!;
+    const session = await sessionService.getSessionByIdAsync(id);
+
+
+    if (session == null) {
+        const errorEmbed = new EmbedBuilder()
+            .setTitle('Error')
+            .setDescription(`Character with id: "${id}" does not exist!`)
+            .setColor('#ff0000');
+
+        return errorEmbed;
+    }
+
+    const successEmbed = new EmbedBuilder()
+        .setTitle(session.name)
+        .setDescription(`Session information of session with id: ${session.id}`)
+        .setColor('#00ff00')
+        .addFields({ name: 'DM', value: `<@${session.dmId}>` }, { name: 'Day of the week', value: session.dayOfWeek.toString() }, { name: 'Time', value: session.time.toString() });
+
+    return successEmbed;
+}
+
+async function showCharacterAsync(interaction: ChatInputCommandInteraction) {
+    const id = interaction.options.getString('id')!;
+    const character = await characterService.getCharacterByIdAsync(id);
+
+    if (character == null) {
+        const errorEmbed = new EmbedBuilder()
+            .setTitle('Error')
+            .setDescription(`Character with id: "${id}" does not exist!`)
+            .setColor('#ff0000');
+
+        return errorEmbed;
+    }
+
+    const successEmbed = new EmbedBuilder()
+        .setTitle(character.name)
+        .setDescription(`Character information of character with id: ${character.id}`)
+        .setColor('#00ff00')
+        .addFields({ name: 'User', value: `<@${character.userId}>` }, { name: 'Session', value: character.Session.name });
+
+    return successEmbed;
 }

@@ -35,5 +35,35 @@ export const characterService = {
                 id: id
             }
         });
+    },
+    async updateCharacterNameAsync(id: string, name: string) {
+        return await client.dndCharacter.update({
+            where: {
+                id: id
+            },
+            data: {
+                name: name
+            }
+        });
+    },
+    async updateCharacterUserIdAsync(id: string, userId: string) {
+        return await client.dndCharacter.update({
+            where: {
+                id: id
+            },
+            data: {
+                userId: userId
+            }
+        });
+    },
+    async updateCharacterSessionIdAsync(id: string, sessionId: string) {
+        return await client.dndCharacter.update({
+            where: {
+                id: id
+            },
+            data: {
+                sessionId: sessionId
+            }
+        });
     }
 }
