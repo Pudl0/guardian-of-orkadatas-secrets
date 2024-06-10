@@ -42,7 +42,7 @@ module.exports = {
                 .addSubcommand(command =>
                     command.setName('session')
                         .setDescription('Shows a specific DnD Session.')
-                        .addIntegerOption(option =>
+                        .addStringOption(option =>
                             option.setName('id')
                                 .setDescription('The ID of the session.')
                                 .setRequired(true)
@@ -51,7 +51,7 @@ module.exports = {
                 .addSubcommand(command =>
                     command.setName('character')
                         .setDescription('Shows a specific DnD Character.')
-                        .addIntegerOption(option =>
+                        .addStringOption(option =>
                             option.setName('id')
                                 .setDescription('The ID of the character.')
                                 .setRequired(true)
