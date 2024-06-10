@@ -27,9 +27,12 @@ Just use [Docker](#running-with-docker)
 
 ## Running with Docker
 
-[Example Compose](/docker-compose.yml)
+[Example Compose without own DB](/docker-compose.yml)
+Use when there is already a MYSQL Server ready to be used
 
-There is a default compose provided.
+[Example Compose with own DB](/docker-compose-withDB.yml)
+Use if you have not yet set up a MYSQL Server
+
 The enviroment variables need to be set to make the bot work.
 See [Environment Variables](#environment-variables)
 
@@ -41,7 +44,11 @@ Create a `.env` in the root folder with following variables:
 - `DISCORD_TOKEN`: the token of your discord bot.
 - `DISCORD_CLIENT_ID`: the client id of your discord bot.
 - `DISCORD_GUILD_ID`: the guild id of the guild that your bot should run in.
+- `DATABASE_URL`: the databaseurl (Format: ```mysql://<database_username>:<database_password>@<ip>:<port>/guardian```)
 
+## DEV
+!! Use bash to create migrations
+Encoding of migration needs to be UTF-8
 
 ## Character Description:
 The Guardian of Orkadata's Secrets stands tall, a figure shrouded in an aura of ancient knowledge and mystical power. At first glance, one might mistake it for a towering statue carved from the very stone of the realm itself, but upon closer inspection, the truth becomes clear: this is a being of immense wisdom and power.

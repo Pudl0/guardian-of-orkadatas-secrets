@@ -1,4 +1,4 @@
-## this is just a sample compose
+## change values in <> to your own values
 
 services:
   discord-bot:
@@ -6,6 +6,6 @@ services:
     build: .
     networks:
       - app-network
-      
+
 networks:
   app-network:
