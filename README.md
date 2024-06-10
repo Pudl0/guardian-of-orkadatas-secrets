@@ -41,6 +41,7 @@ Create a `.env` in the root folder with following variables:
 - `DISCORD_TOKEN`: the token of your discord bot.
 - `DISCORD_CLIENT_ID`: the client id of your discord bot.
 - `DISCORD_GUILD_ID`: the guild id of the guild that your bot should run in.
+- `DATABASE_URL`: the databaseurl (Format: ```mysql://<database_username>:<database_password>@<ip>:<port>/guardian```)
 
 ## DEV
 !! Use bash to create migrations
