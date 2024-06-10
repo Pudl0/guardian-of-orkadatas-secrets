@@ -15,5 +15,8 @@ COPY . /guardian/
 # Run build
 RUN npm run build
 
+# Generate prisma client
+RUN npx prisma generate
+
 # Run docker script
 CMD ["npm", "run", "docker-start"]
