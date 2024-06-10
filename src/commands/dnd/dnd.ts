@@ -1,9 +1,15 @@
+/**
+ * @file DnD Command
+ * @module commands/dnd/dnd
+ * @description Collection of public DnD commands.
+ */
+
 import { ChatInputCommandInteraction, SlashCommandBuilder, EmbedBuilder } from "discord.js";
 import { characterService } from "../../services/characterService";
 import { sessionService } from "../../services/sessionService";
 
 /**
- * Represents a collection of public DnD commands.
+ * Represents the dnd command.
  */
 module.exports = {
     /**
