@@ -1,9 +1,14 @@
-import { ChatInputCommandInteraction, SlashCommandBuilder, EmbedBuilder, ApplicationCommandNumericOptionMinMaxValueMixin } from "discord.js";
+import { ChatInputCommandInteraction, SlashCommandBuilder, EmbedBuilder } from "discord.js";
 import { characterService } from "../../services/characterService";
 import { sessionService } from "../../services/sessionService";
 
-
+/**
+ * Represents a collection of public DnD commands.
+ */
 module.exports = {
+    /**
+     * The data for the slash command.
+     */
     data: new SlashCommandBuilder()
         .setName('dnd')
         .setDescription('Collection of public DnD commands.')
@@ -47,6 +52,10 @@ module.exports = {
                         )
                 )
         ),
+    /**
+     * Executes the DnD command.
+     * @param interaction The command interaction.
+     */
     async execute(interaction: ChatInputCommandInteraction) {
         const subcommandGroup = interaction.options.getSubcommandGroup()!;
         let subcommand = interaction.options.getSubcommand()!;
@@ -66,6 +75,11 @@ module.exports = {
     },
 };
 
+/**
+ * Lists DnD objects based on the specified type.
+ * @param type The type of DnD objects to list.
+ * @returns The embed containing the list of DnD objects.
+ */
 async function listAsync(type: String) {
     switch (type) {
         case 'character':
@@ -76,6 +90,12 @@ async function listAsync(type: String) {
     return new EmbedBuilder().setTitle('Error').setDescription('Invalid type').setColor('#ff0000');
 }
 
+/**
+ * Shows detailed information about a DnD object based on the specified type.
+ * @param type The type of DnD object to show.
+ * @param interaction The command interaction.
+ * @returns The embed containing the detailed information of the DnD object.
+ */
 async function showAsync(type: String, interaction: ChatInputCommandInteraction) {
     switch (type) {
         case 'schedule':
@@ -88,6 +108,10 @@ async function showAsync(type: String, interaction: ChatInputCommandInteraction)
     return new EmbedBuilder().setTitle('Error').setDescription('Invalid type').setColor('#ff0000');
 }
 
+/**
+ * Lists all DnD sessions.
+ * @returns The embed containing the list of DnD sessions.
+ */
 async function listSessionsAsync() {
     let sessions = await sessionService.getSessionsAsync();
 
@@ -113,6 +137,11 @@ async function listSessionsAsync() {
 
     return embed;
 }
+
+/**
+ * Lists all DnD characters.
+ * @returns The embed containing the list of DnD characters.
+ */
 async function listCharactersAsync() {
     let characters = await characterService.getCharactersAsync();
 
@@ -137,6 +166,10 @@ async function listCharactersAsync() {
     return embed;
 }
 
+/**
+ * Shows the schedule of currently active DnD sessions.
+ * @returns The embed containing the DnD session schedule.
+ */
 async function showScheduleAsync() {
     let sessions = await sessionService.getSessionsAsync();
 
@@ -184,10 +217,14 @@ async function showScheduleAsync() {
     return embed;
 }
 
+/**
+ * Shows detailed information about a specific DnD session.
+ * @param interaction The command interaction.
+ * @returns The embed containing the detailed information of the DnD session.
+ */
 async function showSessionAsync(interaction: ChatInputCommandInteraction) {
     const id = interaction.options.getString('id')!;
     const session = await sessionService.getSessionByIdAsync(id);
-
 
     if (session == null) {
         const errorEmbed = new EmbedBuilder()
@@ -207,6 +244,11 @@ async function showSessionAsync(interaction: ChatInputCommandInteraction) {
     return successEmbed;
 }
 
+/**
+ * Shows detailed information about a specific DnD character.
+ * @param interaction The command interaction.
+ * @returns The embed containing the detailed information of the DnD character.
+ */
 async function showCharacterAsync(interaction: ChatInputCommandInteraction) {
     const id = interaction.options.getString('id')!;
     const character = await characterService.getCharacterByIdAsync(id);

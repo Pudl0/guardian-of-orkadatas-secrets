@@ -1,9 +1,20 @@
+/**
+ * @file Manage DnD Command
+ * @module commands/dnd/manage-dnd
+ * @description Collection of private DnD commands.
+ */
+
 import { ChatInputCommandInteraction, SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits } from "discord.js";
 import { characterService } from "../../services/characterService";
 import { sessionService } from "../../services/sessionService";
 
-
+/**
+ * Represents the manage-dnd command.
+ */
 module.exports = {
+    /**
+     * The data for the manage-dnd command.
+     */
     data: new SlashCommandBuilder()
         .setName('manage-dnd')
         .setDescription('Collection of private DnD commands.')
@@ -133,6 +144,10 @@ module.exports = {
                         )
                 )
         ),
+    /**
+     * Executes the manage-dnd command.
+     * @param {ChatInputCommandInteraction} interaction - The command interaction.
+     */
     async execute(interaction: ChatInputCommandInteraction) {
         const subcommandGroup = interaction.options.getSubcommandGroup()!;
         let subcommand = interaction.options.getSubcommand()!;
@@ -154,6 +169,12 @@ module.exports = {
     },
 };
 
+/**
+ * Creates a new DnD character.
+ * @param {String} type - The type of the character.
+ * @param {ChatInputCommandInteraction} interaction - The command interaction.
+ * @returns {Promise<EmbedBuilder>} The embed builder with the result.
+ */
 async function createAsync(type: String, interaction: ChatInputCommandInteraction) {
     switch (type) {
         case 'character':
@@ -164,6 +185,11 @@ async function createAsync(type: String, interaction: ChatInputCommandInteractio
     return new EmbedBuilder().setTitle('Error').setDescription('Invalid type').setColor('#ff0000');
 }
 
+/**
+ * Creates a new DnD character.
+ * @param {ChatInputCommandInteraction} interaction - The command interaction.
+ * @returns {Promise<EmbedBuilder>} The embed builder with the result.
+ */
 async function createCharacterAsync(interaction: ChatInputCommandInteraction) {
     var user = interaction.options.getUser('user');
     const name = interaction.options.getString('name')!;
@@ -192,6 +218,11 @@ async function createCharacterAsync(interaction: ChatInputCommandInteraction) {
     return successEmbed;
 }
 
+/**
+ * Creates a new DnD session.
+ * @param {ChatInputCommandInteraction} interaction - The command interaction.
+ * @returns {Promise<EmbedBuilder>} The embed builder with the result.
+ */
 async function createSessionAsync(interaction: ChatInputCommandInteraction) {
     const dm = interaction.options.getUser('dm')!;
     const name = interaction.options.getString('name')!;
@@ -217,6 +248,12 @@ async function createSessionAsync(interaction: ChatInputCommandInteraction) {
     return successEmbed;
 }
 
+/**
+ * Deletes an existing DnD object.
+ * @param {String} type - The type of the object.
+ * @param {ChatInputCommandInteraction} interaction - The command interaction.
+ * @returns {Promise<EmbedBuilder>} The embed builder with the result.
+ */
 async function deleteAsync(type: String, interaction: ChatInputCommandInteraction) {
     switch (type) {
         case 'character':
@@ -227,6 +264,11 @@ async function deleteAsync(type: String, interaction: ChatInputCommandInteractio
     return new EmbedBuilder().setTitle('Error').setDescription('Invalid type').setColor('#ff0000');
 }
 
+/**
+ * Deletes a character based on the provided id.
+ * @param interaction - The ChatInputCommandInteraction object representing the interaction with the command.
+ * @returns A success or error EmbedBuilder object indicating the result of the deletion.
+ */
 async function deleteCharacterAsync(interaction: ChatInputCommandInteraction) {
     const id = interaction.options.getString('id')!;
     let session = await characterService.getCharacterByIdAsync(id);
@@ -251,10 +293,15 @@ async function deleteCharacterAsync(interaction: ChatInputCommandInteraction) {
     return successEmbed;
 }
 
+
+/**
+ * Deletes a session based on the provided name.
+ * @param interaction - The ChatInputCommandInteraction object representing the interaction with the command.
+ * @returns A success or error EmbedBuilder object indicating the result of the deletion.
+ */
 async function deleteSessionAsync(interaction: ChatInputCommandInteraction) {
     const name = interaction.options.getString('name')!;
     let session = await sessionService.getSessionByNameAsync(name);
-
 
     if (session == null) {
         const errorEmbed = new EmbedBuilder()
@@ -275,6 +322,12 @@ async function deleteSessionAsync(interaction: ChatInputCommandInteraction) {
     return successEmbed;
 }
 
+/**
+ * Updates an existing DnD object.
+ * @param {String} type - The type of the object.
+ * @param {ChatInputCommandInteraction} interaction - The command interaction.
+ * @returns {Promise<EmbedBuilder>} The embed builder with the result.
+ */
 async function updateAsync(type: String, interaction: ChatInputCommandInteraction) {
     switch (type) {
         case 'session':
@@ -285,6 +338,11 @@ async function updateAsync(type: String, interaction: ChatInputCommandInteractio
     return new EmbedBuilder().setTitle('Error').setDescription('Invalid type').setColor('#ff0000');    
 }
 
+/**
+ * Updates a session based on the provided interaction.
+ * @param interaction - The ChatInputCommandInteraction object representing the interaction.
+ * @returns A Promise that resolves to an EmbedBuilder object representing the result of the update.
+ */
 async function updateSessionAsync(interaction: ChatInputCommandInteraction) {
     const id = interaction.options.getString('id')!;
     const session = await sessionService.getSessionByIdAsync(id);
@@ -359,6 +417,11 @@ async function updateSessionAsync(interaction: ChatInputCommandInteraction) {
     return successEmbed;
 }
 
+/**
+ * Updates a character based on the provided interaction.
+ * @param interaction - The ChatInputCommandInteraction object representing the interaction.
+ * @returns A Promise that resolves to an EmbedBuilder object representing the result of the update.
+ */
 async function updateCharacterAsync(interaction: ChatInputCommandInteraction) {
     const id = interaction.options.getString('id')!;
     const character = await characterService.getCharacterByIdAsync(id);
