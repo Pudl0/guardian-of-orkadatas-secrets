@@ -8,6 +8,8 @@ import { ChatInputCommandInteraction, SlashCommandBuilder, EmbedBuilder } from "
 import { characterService } from "../../services/characterService";
 import { sessionService } from "../../services/sessionService";
 
+const weekday = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+
 /**
  * Represents the dnd command.
  */
@@ -132,12 +134,10 @@ async function listSessionsAsync() {
         return embed;
     }
 
-    const weekday = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-
     sessions.forEach(session => {
         embed.addFields({
             name: session.name,
-            value: `Session ID: ${session.id}\nActive: ${session.active}\nDM: <@${session.dmId}>\nPlaying every ${weekday[session.dayOfWeek]} at ${(session.time.toString().length == 1 ? "0" : "") + session.time}:00\n${session.DndCharacter.length} ${session.DndCharacter.length == 1 ? "Player" : "Players"}`
+            value: `Session ID: ${session.id}\nActive: ${session.active}\nDM: <@${session.dmId}>`
         });
     });
 
@@ -245,7 +245,7 @@ async function showSessionAsync(interaction: ChatInputCommandInteraction) {
         .setTitle(session.name)
         .setDescription(`Session information of session with id: ${session.id}`)
         .setColor('#00ff00')
-        .addFields({ name: 'DM', value: `<@${session.dmId}>` }, { name: 'Day of the week', value: session.dayOfWeek.toString() }, { name: 'Time', value: session.time.toString() });
+        .addFields({ name: 'DM', value: `<@${session.dmId}>` }, { name: 'Active', value: session.active ? 'Yes' : 'No' }, { name: 'Playing time', value: `Every ${weekday[session.dayOfWeek]} at ${(session.time.toString().length == 1 ? "0" : "") + session.time}:00` }, { name: 'Players', value: session.DndCharacter.length.toString() });
 
     return successEmbed;
 }

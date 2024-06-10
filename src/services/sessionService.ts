@@ -41,6 +41,9 @@ export const sessionService = {
         return await client.dndSession.findUnique({
             where: {
                 id: id
+            },
+            include: {
+                DndCharacter: true
             }
         });
     },
