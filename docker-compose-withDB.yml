@@ -1,0 +1,36 @@
+## change values in <> to your own values
+
+services:
+  discord-bot:
+    container_name: discord-bot
+    build: .
+    networks:
+      - app-network
+    depends_on:
+      db:
+        condition: service_healthy
+  db:
+    image: lscr.io/linuxserver/mariadb:latest
+    container_name: mariadb
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Berlin
+      - MYSQL_ROOT_PASSWORD=<DATABASE_ROOT_PASSWORD>
+      - MYSQL_DATABASE=guardian
+      - MYSQL_USER=<username>
+      - MYSQL_PASSWORD=<password>
+    volumes:
+      - ./config:/config
+    ports:
+      - 3306:3306
+    networks:
+      - app-network
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+      timeout: 20s
+      retries: 10
+    restart: unless-stopped
+
+networks:
+  app-network:

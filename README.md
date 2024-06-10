@@ -27,9 +27,12 @@ Just use [Docker](#running-with-docker)
 
 ## Running with Docker
 
-[Example Compose](/docker-compose.yml)
+[Example Compose without own DB](/docker-compose.yml)
+Use when there is already a MYSQL Server ready to be used
 
-There is a default compose provided.
+[Example Compose with own DB](/docker-compose-withDB.yml)
+Use if you have not yet set up a MYSQL Server
+
 The enviroment variables need to be set to make the bot work.
 See [Environment Variables](#environment-variables)
 
