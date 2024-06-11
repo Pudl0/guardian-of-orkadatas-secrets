@@ -1,21 +1,33 @@
 import { ChatInputCommandInteraction, SlashCommandBuilder, GuildMemberRoleManager, RoleResolvable, DiscordAPIError } from "discord.js";
 
-
+/**
+ * Represents a command that adds a role to the user if the role has lower permissions than the user's highest role.
+ */
 module.exports = {
-    data: new SlashCommandBuilder()
-        .setName('giverole')
-        .setDescription('Adds role to self if that role is of lower permission than the highest role of self.')
-        .addRoleOption(option =>
-            option
-                .setName("role")
-                .setDescription("Role to add")
-                .setRequired(true)),
+    /**
+     * Creates a new slash command builder for the "giverole" command.
+     * @returns The slash command builder.
+     */
+    async create() {
+        return new SlashCommandBuilder()
+            .setName('giverole')
+            .setDescription('Adds role to self if that role is of lower permission than the highest role of self.')
+            .addRoleOption(option =>
+                option
+                    .setName("role")
+                    .setDescription("Role to add")
+                    .setRequired(true))
+    },
+    /**
+     * Executes the "giverole" command.
+     * @param interaction - The interaction object representing the command interaction.
+     */
     async execute(interaction: ChatInputCommandInteraction) {
         const role = interaction.options.getRole('role');
 
         if ((interaction.member?.roles as GuildMemberRoleManager).cache.some(r => r.name == role?.name)) {
             await interaction.reply({ content: `You already have "${role?.name}"`, ephemeral: true });
-            return;   
+            return;
         }
 
         let sucessfull = await (interaction.member?.roles as GuildMemberRoleManager).add(role as RoleResolvable).catch(async error => {
@@ -28,7 +40,7 @@ module.exports = {
 
         if (sucessfull != undefined) {
             await interaction.reply(`Role "${role?.name}" has been added`);
-        }        
+        }
     },
 };
 

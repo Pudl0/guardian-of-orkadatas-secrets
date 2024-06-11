@@ -7,143 +7,185 @@
 import { ChatInputCommandInteraction, SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits } from "discord.js";
 import { characterService } from "../../services/characterService";
 import { sessionService } from "../../services/sessionService";
+import { REST, Routes } from 'discord.js';
+import { config } from "../../config";
+import fs from 'node:fs';
+import path from 'node:path';
 
 /**
  * Represents the manage-dnd command.
  */
 module.exports = {
-    /**
-     * The data for the manage-dnd command.
-     */
-    data: new SlashCommandBuilder()
-        .setName('manage-dnd')
-        .setDescription('Collection of private DnD commands.')
-        .setDefaultMemberPermissions(PermissionFlagsBits.ManageChannels)
-        .addSubcommandGroup(group =>
-            group
-                .setName('create')
-                .setDescription('Create new DnD objects.')
-                .addSubcommand(command =>
-                    command.setName('session')
-                        .setDescription('Create a new DnD session.')
-                        .addStringOption(option =>
-                            option.setName('name')
-                                .setDescription('The name of the session.')
-                                .setRequired(true)
-                        )
-                        .addUserOption(option =>
-                            option.setName('dm')
-                                .setDescription('The Dungeon Master of the session.')
-                                .setRequired(true)
-                        )
-                        .addIntegerOption(option =>
-                            option.setName('dayoftheweek')
-                                .setDescription('The day of the week the session is on. (0-6) 0 = Sunday, 6 = Saturday.')
-                                .setRequired(true)
-                        )
-                        .addIntegerOption(option =>
-                            option.setName('time')
-                                .setDescription('The time the session is on. (0-23) 0 = 12:00 AM, 23 = 11:00 PM.')
-                                .setRequired(true)
-                        )
-                )
-                .addSubcommand(command =>
-                    command.setName('character')
-                        .setDescription('Create a new DnD character.')
-                        .addStringOption(option =>
-                            option.setName('name')
-                                .setDescription('The name of the character.')
-                                .setRequired(true)
-                        )
-                        .addStringOption(option =>
-                            option.setName('sessionid')
-                                .setDescription('The Session Id to add the character to.')
-                                .setRequired(true)
-                        )
-                        .addUserOption(option =>
-                            option.setName('user')
-                                .setDescription('The user of the character.')
-                        )
-                )
-        )
-        .addSubcommandGroup(group =>
-            group
-                .setName('delete')
-                .setDescription('Delete existing DnD objects.')
-                .addSubcommand(command =>
-                    command.setName('session')
-                        .setDescription('Delete existing DnD session.')
-                        .addStringOption(option =>
-                            option.setName('name')
-                                .setDescription('The name of the session.')
-                                .setRequired(true)
-                        )
-                )
-                .addSubcommand(command =>
-                    command.setName('character')
-                        .setDescription('Delete existing DnD character.')
-                        .addStringOption(option =>
-                            option.setName('id')
-                                .setDescription('The id of the character.')
-                                .setRequired(true)
-                        )
-                )
-        )
-        .addSubcommandGroup(group =>
-            group
-                .setName('update')
-                .setDescription('Update state of DnD Objects.')
-                .addSubcommand(command =>
-                    command.setName('session')
-                        .setDescription('Update session')
-                        .addStringOption(option =>
-                            option.setName('id')
-                                .setDescription('The id of the session.')
-                                .setRequired(true)
-                        )
-                        .addStringOption(option =>
-                            option.setName('name')
-                                .setDescription('The new name of the session.')
-                        )
-                        .addUserOption(option =>
-                            option.setName('dm')
-                                .setDescription('The new Dungeon Master of the session.')
-                        )
-                        .addBooleanOption(option =>
-                            option.setName("active")
-                                .setDescription("Change active state of session")
-                        )
-                        .addIntegerOption(option =>
-                            option.setName('dayoftheweek')
-                                .setDescription('The day of the week the session is on. (0-6) 0 = Sunday, 6 = Saturday.')
-                        )
-                        .addIntegerOption(option =>
-                            option.setName('time')
-                                .setDescription('The time the session is on. (0-23) 0 = 12:00 AM, 23 = 11:00 PM.')
-                        )
-                )
-                .addSubcommand(command =>
-                    command.setName('character')
-                        .setDescription('Update character')
-                        .addStringOption(option =>
-                            option.setName('id')
-                                .setDescription('The id of the character.')
-                                .setRequired(true)
-                        )
-                        .addStringOption(option =>
-                            option.setName('name')
-                                .setDescription('The new name of the character.')
-                        )
-                        .addUserOption(option =>
-                            option.setName('user')
-                                .setDescription('The new user of the character.')
-                        )
-                        .addStringOption(option =>
-                            option.setName('sessionid')
-                                .setDescription('The new Session Id to add the character to.')
-                        )
-                )
-        ),
+    async create() {
+        const sessions = await sessionService.getSessionsAsync();
+        const characters = await characterService.getCharactersAsync();
+
+        return new SlashCommandBuilder()
+            .setName('manage-dnd')
+            .setDescription('Collection of private DnD commands.')
+            .setDefaultMemberPermissions(PermissionFlagsBits.ManageChannels)
+            .addSubcommandGroup(group =>
+                group
+                    .setName('create')
+                    .setDescription('Create new DnD objects.')
+                    .addSubcommand(command =>
+                        command.setName('session')
+                            .setDescription('Create a new DnD session.')
+                            .addStringOption(option =>
+                                option.setName('name')
+                                    .setDescription('The name of the session.')
+                                    .setRequired(true)
+                            )
+                            .addUserOption(option =>
+                                option.setName('dm')
+                                    .setDescription('The Dungeon Master of the session.')
+                                    .setRequired(true)
+                            )
+                            .addIntegerOption(option =>
+                                option.setName('dayoftheweek')
+                                    .setDescription('The day of the week the session is on. (0-6) 0 = Sunday, 6 = Saturday.')
+                                    .setRequired(true)
+                            )
+                            .addIntegerOption(option =>
+                                option.setName('time')
+                                    .setDescription('The time the session is on. (0-23) 0 = 12:00 AM, 23 = 11:00 PM.')
+                                    .setRequired(true)
+                            )
+                    )
+                    .addSubcommand(command =>
+                        command.setName('character')
+                            .setDescription('Create a new DnD character.')
+                            .addStringOption(option =>
+                                option.setName('name')
+                                    .setDescription('The name of the character.')
+                                    .setRequired(true)
+                            )
+                            .addStringOption(option => {
+                                option.setName('session')
+                                    .setDescription('The Session to add the character to.')
+                                    .setRequired(true)
+
+                                sessions.forEach(session => {
+                                    option.addChoices({ name: session.name, value: session.id });
+                                });
+
+                                return option;
+                            })
+                            .addUserOption(option =>
+                                option.setName('user')
+                                    .setDescription('The user of the character.')
+                            )
+                    )
+            )
+            .addSubcommandGroup(group =>
+                group
+                    .setName('delete')
+                    .setDescription('Delete existing DnD objects.')
+                    .addSubcommand(command =>
+                        command.setName('session')
+                            .setDescription('Delete existing DnD session.')
+                            .addStringOption(option => {
+                                option.setName('name')
+                                    .setDescription('The name of the session.')
+                                    .setRequired(true)
+
+                                sessions.forEach(session => {
+                                    option.addChoices({ name: session.name, value: session.id });
+                                });
+
+                                return option;
+                            })
+                    )
+                    .addSubcommand(command =>
+                        command.setName('character')
+                            .setDescription('Delete existing DnD character.')
+                            .addStringOption(option => {
+                                option.setName('name')
+                                    .setDescription('The name of the character.')
+                                    .setRequired(true)
+
+                                characters.forEach(character => {
+                                    option.addChoices({ name: character.name, value: character.id });
+                                });
+
+                                return option;
+                            })
+                    )
+            )
+            .addSubcommandGroup(group =>
+                group
+                    .setName('update')
+                    .setDescription('Update state of DnD Objects.')
+                    .addSubcommand(command =>
+                        command.setName('session')
+                            .setDescription('Update session')
+                            .addStringOption(option => {
+                                option.setName('session')
+                                    .setDescription('The session to update.')
+                                    .setRequired(true)
+
+                                sessions.forEach(session => {
+                                    option.addChoices({ name: session.name, value: session.id });
+                                });
+
+                                return option;
+                            })
+                            .addStringOption(option =>
+                                option.setName('name')
+                                    .setDescription('The new name of the session.')
+                            )
+                            .addUserOption(option =>
+                                option.setName('dm')
+                                    .setDescription('The new Dungeon Master of the session.')
+                            )
+                            .addBooleanOption(option =>
+                                option.setName("active")
+                                    .setDescription("Change active state of session")
+                            )
+                            .addIntegerOption(option =>
+                                option.setName('dayoftheweek')
+                                    .setDescription('The day of the week the session is on. (0-6) 0 = Sunday, 6 = Saturday.')
+                            )
+                            .addIntegerOption(option =>
+                                option.setName('time')
+                                    .setDescription('The time the session is on. (0-23) 0 = 12:00 AM, 23 = 11:00 PM.')
+                            )
+                    )
+                    .addSubcommand(command =>
+                        command.setName('character')
+                            .setDescription('Update character')
+                            .addStringOption(option => {
+                                option.setName('character')
+                                    .setDescription('The character to update.')
+                                    .setRequired(true)
+
+                                characters.forEach(character => {
+                                    option.addChoices({ name: character.name, value: character.id });
+                                });
+
+                                return option;
+                            })
+                            .addStringOption(option =>
+                                option.setName('name')
+                                    .setDescription('The new name of the character.')
+                            )
+                            .addUserOption(option =>
+                                option.setName('user')
+                                    .setDescription('The new user of the character.')
+                            )
+                            .addStringOption(option => {
+                                option.setName('session')
+                                    .setDescription('The Session to add the character to.')
+
+                                sessions.forEach(session => {
+                                    option.addChoices({ name: session.name, value: session.id });
+                                });
+
+                                return option;
+                            })
+                    )
+            )
+    },
     /**
      * Executes the manage-dnd command.
      * @param {ChatInputCommandInteraction} interaction - The command interaction.
@@ -166,8 +208,45 @@ module.exports = {
         }
 
         await interaction.reply({ embeds: [embed] });
+
+        if (embed.data.title == 'Error')
+            return;
+
+        await reloadDnDCommands(interaction);
     },
 };
+
+/**
+ * Reloads the DnD commands.
+ * @param {ChatInputCommandInteraction} interaction - The command interaction.
+ */
+async function reloadDnDCommands(interaction: ChatInputCommandInteraction) {
+
+    const commands: any[] = [];
+
+    // __dirname is the current file's directory
+
+    const commandFiles = fs.readdirSync(__dirname).filter(file => file.endsWith('.js'));
+    for (const file of commandFiles) {
+        const filePath = path.join(__dirname, file);
+        delete require.cache[require.resolve(filePath)];
+        let command = require(filePath);
+        let commandData = await command.create();
+        commands.push(commandData.toJSON());
+        interaction.client.commands.set(commandData.name, command);
+    }
+
+    const rest = new REST().setToken(config.DISCORD_TOKEN);
+
+    try {
+        await rest.put(
+            Routes.applicationGuildCommands(config.DISCORD_CLIENT_ID, config.DISCORD_GUILD_ID),
+            { body: commands },
+        );
+    } catch (error) {
+        console.error(error);
+    }
+}
 
 /**
  * Creates a new DnD character.
@@ -193,7 +272,7 @@ async function createAsync(type: String, interaction: ChatInputCommandInteractio
 async function createCharacterAsync(interaction: ChatInputCommandInteraction) {
     var user = interaction.options.getUser('user');
     const name = interaction.options.getString('name')!;
-    const sessionId = interaction.options.getString('sessionid')!;
+    const sessionId = interaction.options.getString('session')!;
 
     if (user == null) {
         user = interaction.user;
@@ -270,7 +349,7 @@ async function deleteAsync(type: String, interaction: ChatInputCommandInteractio
  * @returns A success or error EmbedBuilder object indicating the result of the deletion.
  */
 async function deleteCharacterAsync(interaction: ChatInputCommandInteraction) {
-    const id = interaction.options.getString('id')!;
+    const id = interaction.options.getString('name')!;
     let session = await characterService.getCharacterByIdAsync(id);
 
 
@@ -300,13 +379,13 @@ async function deleteCharacterAsync(interaction: ChatInputCommandInteraction) {
  * @returns A success or error EmbedBuilder object indicating the result of the deletion.
  */
 async function deleteSessionAsync(interaction: ChatInputCommandInteraction) {
-    const name = interaction.options.getString('name')!;
-    let session = await sessionService.getSessionByNameAsync(name);
+    const id = interaction.options.getString('name')!;
+    let session = await sessionService.getSessionByIdAsync(id);
 
     if (session == null) {
         const errorEmbed = new EmbedBuilder()
             .setTitle('Error')
-            .setDescription(`Session with name: "${name}" does not exist!`)
+            .setDescription(`Session with id: "${id}" does not exist!`)
             .setColor('#ff0000');
 
         return errorEmbed;
@@ -335,7 +414,7 @@ async function updateAsync(type: String, interaction: ChatInputCommandInteractio
         case 'character':
             return await updateCharacterAsync(interaction);
     }
-    return new EmbedBuilder().setTitle('Error').setDescription('Invalid type').setColor('#ff0000');    
+    return new EmbedBuilder().setTitle('Error').setDescription('Invalid type').setColor('#ff0000');
 }
 
 /**
@@ -344,7 +423,7 @@ async function updateAsync(type: String, interaction: ChatInputCommandInteractio
  * @returns A Promise that resolves to an EmbedBuilder object representing the result of the update.
  */
 async function updateSessionAsync(interaction: ChatInputCommandInteraction) {
-    const id = interaction.options.getString('id')!;
+    const id = interaction.options.getString('session')!;
     const session = await sessionService.getSessionByIdAsync(id);
 
     if (session == null) {
@@ -360,7 +439,7 @@ async function updateSessionAsync(interaction: ChatInputCommandInteraction) {
     const name = interaction.options.getString('name');
     const dm = interaction.options.getUser('dm');
     const dayOfTheWeek = interaction.options.getInteger('dayoftheweek');
-    const time = interaction.options.getInteger('time');   
+    const time = interaction.options.getInteger('time');
 
     let changes: string[] = [];
 
@@ -386,7 +465,7 @@ async function updateSessionAsync(interaction: ChatInputCommandInteraction) {
                 .setTitle('Error')
                 .setDescription(`Invalid day of the week: ${dayOfTheWeek}`)
                 .setColor('#ff0000');
-    
+
             return errorEmbed;
         }
         changes.push(`Day of the week: ${dayOfTheWeek}`);
@@ -399,19 +478,19 @@ async function updateSessionAsync(interaction: ChatInputCommandInteraction) {
                 .setTitle('Error')
                 .setDescription(`Invalid time: ${time}`)
                 .setColor('#ff0000');
-    
+
             return errorEmbed;
         }
         changes.push(`Time: ${time}`);
     }
-    
+
     const successEmbed = new EmbedBuilder()
         .setTitle('Success')
         .setDescription(`Successfully updated session: ${session.name}!`)
         .setColor('#00ff00');
 
     for (let i = 0; i < changes.length; i++) {
-        successEmbed.addFields({ name: `Change ${i + 1}`, value: changes[i]});
+        successEmbed.addFields({ name: `Change ${i + 1}`, value: changes[i] });
     }
 
     return successEmbed;
@@ -423,7 +502,7 @@ async function updateSessionAsync(interaction: ChatInputCommandInteraction) {
  * @returns A Promise that resolves to an EmbedBuilder object representing the result of the update.
  */
 async function updateCharacterAsync(interaction: ChatInputCommandInteraction) {
-    const id = interaction.options.getString('id')!;
+    const id = interaction.options.getString('character')!;
     const character = await characterService.getCharacterByIdAsync(id);
 
     if (character == null) {
@@ -437,7 +516,7 @@ async function updateCharacterAsync(interaction: ChatInputCommandInteraction) {
 
     const name = interaction.options.getString('name');
     const user = interaction.options.getUser('user');
-    const sessionid = interaction.options.getString('sessionid');
+    const sessionid = interaction.options.getString('session');
 
     let changes: string[] = [];
 
@@ -462,7 +541,7 @@ async function updateCharacterAsync(interaction: ChatInputCommandInteraction) {
         .setColor('#00ff00');
 
     for (let i = 0; i < changes.length; i++) {
-        successEmbed.addFields({ name: `Change ${i + 1}`, value: changes[i]});
+        successEmbed.addFields({ name: `Change ${i + 1}`, value: changes[i] });
     }
 
     return successEmbed;

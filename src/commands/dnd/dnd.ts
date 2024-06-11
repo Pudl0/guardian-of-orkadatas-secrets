@@ -14,10 +14,11 @@ const weekday = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday
  * Represents the dnd command.
  */
 module.exports = {
-    /**
-     * The data for the slash command.
-     */
-    data: new SlashCommandBuilder()
+    async create() {
+        const sessions = await sessionService.getSessionsAsync();
+        const characters = await characterService.getCharactersAsync();
+
+        return new SlashCommandBuilder()
         .setName('dnd')
         .setDescription('Collection of public DnD commands.')
         .addSubcommandGroup(group =>
@@ -44,22 +45,35 @@ module.exports = {
                 .addSubcommand(command =>
                     command.setName('session')
                         .setDescription('Shows a specific DnD Session.')
-                        .addStringOption(option =>
-                            option.setName('id')
-                                .setDescription('The ID of the session.')
-                                .setRequired(true)
-                        )
+                        .addStringOption(option => {
+                            option.setName('name')
+                                .setDescription('The name of the session.')
+                                .setRequired(true);
+
+                            sessions.forEach(session => {
+                                option.addChoices({ name: session.name, value: session.id });
+                            });
+
+                            return option;
+                        })
                 )
                 .addSubcommand(command =>
                     command.setName('character')
                         .setDescription('Shows a specific DnD Character.')
-                        .addStringOption(option =>
-                            option.setName('id')
-                                .setDescription('The ID of the character.')
+                        .addStringOption(option => {
+                            option.setName('name')
+                                .setDescription('The name of the character.')
                                 .setRequired(true)
-                        )
+
+                            characters.forEach(character => {
+                                option.addChoices({ name: character.name, value: character.id });
+                            });
+
+                            return option;
+                        })
                 )
-        ),
+        )
+    },
     /**
      * Executes the DnD command.
      * @param interaction The command interaction.
@@ -229,7 +243,7 @@ async function showScheduleAsync() {
  * @returns The embed containing the detailed information of the DnD session.
  */
 async function showSessionAsync(interaction: ChatInputCommandInteraction) {
-    const id = interaction.options.getString('id')!;
+    const id = interaction.options.getString('name')!;
     const session = await sessionService.getSessionByIdAsync(id);
 
     if (session == null) {
@@ -256,7 +270,7 @@ async function showSessionAsync(interaction: ChatInputCommandInteraction) {
  * @returns The embed containing the detailed information of the DnD character.
  */
 async function showCharacterAsync(interaction: ChatInputCommandInteraction) {
-    const id = interaction.options.getString('id')!;
+    const id = interaction.options.getString('name')!;
     const character = await characterService.getCharacterByIdAsync(id);
 
     if (character == null) {
