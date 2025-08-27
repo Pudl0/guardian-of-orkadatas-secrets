@@ -2,7 +2,7 @@
 
 This repository has been **moved** to a new location:
 
-👉 [https://git.trashlabs.de/lost-mines-of-it/guarian-of-secrets](https://git.trashlabs.de/lost-mines-of-it/guarian-of-secrets)
+👉 [https://git.trashlabs.de/lost-mines-of-it/guardian-of-secrets](https://git.trashlabs.de/lost-mines-of-it/guardian-of-secrets)
 
 Please update your bookmarks and clone the new repository instead.  
 This repo will no longer be maintained.
